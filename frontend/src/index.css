@@ -1,0 +1,181 @@
+/* src/index.css — Strict red / white / black palette. Default = LIGHT. */
+
+@import "tailwindcss";
+
+/* CRITICAL FIX: Enable class-based dark mode.
+   Tailwind v4 defaults to 'media' strategy (follows OS preference).
+   This forces it to ONLY respond to the .dark class on <html>,
+   giving us full programmatic control via ThemeContext. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* Brand */
+  --color-primary:        #DC2626;
+  --color-primary-hover:  #B91C1C;
+  --color-primary-light:  #EF4444;
+  --color-primary-dark:   #991B1B;
+  --color-primary-muted:  #FEE2E2;
+  --color-primary-subtle: #FEF2F2;
+
+  /* Data-viz only (charts) */
+  --color-safe:          #10B981;
+  --color-safe-light:    #34D399;
+  --color-warning:       #F59E0B;
+  --color-warning-light: #FBBF24;
+  --color-risk:          #DC2626;
+  --color-risk-light:    #EF4444;
+}
+
+@layer base {
+  /* ── Light mode (default) ── */
+  :root {
+    --background:       #ffffff;
+    --foreground:       #111111;
+    --card:             #ffffff;
+    --card-foreground:  #111111;
+    --border:           #e5e5e5;
+    --muted:            #f5f5f5;
+    --muted-foreground: #737373;
+    --accent:           #DC2626;
+    --accent-bg:        #FEF2F2;
+    --accent-border:    #FECACA;
+  }
+
+  /* ── Dark mode — ONLY active when .dark is on <html> ── */
+  .dark {
+    --background:       #0a0a0a;
+    --foreground:       #fafafa;
+    --card:             #111111;
+    --card-foreground:  #fafafa;
+    --border:           #222222;
+    --muted:            #161616;
+    --muted-foreground: #a3a3a3;
+    --accent:           #EF4444;
+    --accent-bg:        #1c0404;
+    --accent-border:    #450a0a;
+  }
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    /* Hard white on initial paint — before React hydrates.
+       ThemeProvider will add/remove .dark after mount. */
+    background-color: #ffffff;
+  }
+
+  /* Transitions only activate after ThemeProvider mounts (.theme-ready).
+     This prevents dark→light flash on first render. */
+  html.theme-ready {
+    transition-property: background-color, color, border-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html.theme-ready body {
+    transition-property: background-color, color;
+    transition-duration: 200ms;
+  }
+
+  :focus-visible {
+    outline: 2px solid #DC2626;
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar              { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track        { background: transparent; }
+  ::-webkit-scrollbar-thumb        { background-color: #e5e5e5; border-radius: 9999px; }
+  .dark ::-webkit-scrollbar-thumb  { background-color: #333333; }
+  ::-webkit-scrollbar-thumb:hover  { background-color: #DC2626; }
+}
+
+@layer utilities {
+  .glass {
+    background-color: rgb(255 255 255 / 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+  }
+  .dark .glass {
+    background-color: rgb(17 17 17 / 0.85);
+    border-color: rgb(34 34 34 / 0.5);
+  }
+
+  .card-hover {
+    transition-property: box-shadow, border-color;
+    transition-duration: 200ms;
+  }
+  .card-hover:hover {
+    box-shadow: 0 4px 12px -2px rgb(220 38 38 / 0.08);
+    border-color: #FECACA;
+  }
+  .dark .card-hover:hover {
+    box-shadow: 0 4px 12px -2px rgb(220 38 38 / 0.15);
+    border-color: #450a0a;
+  }
+
+  .btn-primary {
+    background-color: #DC2626;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    transition: background-color 150ms;
+  }
+  .btn-primary:hover  { background-color: #B91C1C; }
+  .btn-primary:active { background-color: #991B1B; }
+
+  .btn-secondary {
+    background-color: #f5f5f5;
+    color: #171717;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e5e5;
+    transition: background-color 150ms, border-color 150ms;
+  }
+  .btn-secondary:hover { background-color: #ebebeb; }
+  .dark .btn-secondary { background-color: #1a1a1a; color: #f5f5f5; border-color: #2a2a2a; }
+  .dark .btn-secondary:hover { background-color: #222222; }
+
+  .badge-base {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .badge-critical { background-color: #fee2e2; color: #991B1B; }
+  .dark .badge-critical { background-color: rgb(69 10 10 / 0.5); color: #fca5a5; }
+
+  .badge-high { background-color: #ffedd5; color: #c2410c; }
+  .dark .badge-high { background-color: rgb(124 45 18 / 0.3); color: #fdba74; }
+
+  .badge-low { background-color: #fefce8; color: #854d0e; }
+  .dark .badge-low { background-color: rgb(113 63 18 / 0.3); color: #fde047; }
+
+  .badge-normal { background-color: #dcfce7; color: #15803d; }
+  .dark .badge-normal { background-color: rgb(20 83 45 / 0.3); color: #86efac; }
+
+  .gradient-red {
+    background: linear-gradient(135deg, #DC2626 0%, #EF4444 60%, #F87171 100%);
+  }
+  .gradient-subtle {
+    background: linear-gradient(135deg, #FEF2F2 0%, #ffffff 100%);
+  }
+  .dark .gradient-subtle {
+    background: linear-gradient(135deg, #1c0404 0%, #111111 100%);
+  }
+}
